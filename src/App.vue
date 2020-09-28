@@ -39,7 +39,7 @@
 import Vue from 'vue'
 import { dogNames, mockDescription, url, numDogs } from '@/common/constants'
 import { ajax } from 'rxjs/ajax'
-import { map, catchError, delay, share, exhaustMap } from 'rxjs/operators'
+import { map, catchError, delay, share, exhaustMap, tap } from 'rxjs/operators'
 import { EMPTY, BehaviorSubject, concat, of } from 'rxjs'
 import DragLoader from '@/components/DragLoader'
 
@@ -70,6 +70,9 @@ export default {
   subscriptions() {
     const source$ = refresh$.pipe(
       exhaustMap(() => concat(of(new Array(numDogs).fill(null)), dogAPI$)),
+      tap(() => {
+        this.names = this.names.map(this.getName)
+      }),
     )
     return {
       source$,
